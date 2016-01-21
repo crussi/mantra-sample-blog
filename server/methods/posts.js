@@ -35,7 +35,7 @@ var redirectUrl = OAuth._redirectUri('cronofy', config);
           grant_type: 'authorization_code',
           code: code,
 
-          redirect_uri: "http://localhost:3000/cronofy"
+          redirect_uri: "http://localhost:3000"
       };
 
       console.dir(options);

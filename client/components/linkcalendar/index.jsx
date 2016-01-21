@@ -13,7 +13,7 @@ class LinkCalendar extends React.Component {
     linkCalendar() {
         console.log("flow router /authorize-cronofy");
         var options = {
-            redirectUrl:"http://localhost:3000/cronofy"
+            redirectUrl:"http://localhost:3000"
         };
         Cronofy.requestCredential(options, function (code){
             console.log('flow router request cred cb res: ' + code);
