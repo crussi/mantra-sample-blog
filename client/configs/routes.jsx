@@ -47,11 +47,14 @@ export const initRoutes = (context, actions) => {
         });
     }
   });
-  FlowRouter.route('/cronofy', {
+  FlowRouter.route('/_oauth/cronofy', {
     name: 'cronofy',
     action(code) {
         console.log('route: cronofy');
         console.log(code);
+      mount(MainLayoutCtx, {
+        content: () => (<LinkCalendar/>)
+      });
     }
   });
 };

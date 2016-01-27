@@ -38,4 +38,4 @@ createServiceConfiguration = function(service, clientId, secret) {
             return ServiceConfiguration.configurations.insert(config.generic);
     }
 };
-createServiceConfiguration('cronofy', '_QOoOhBwuUfl3ZDBhN9lsNGXPdKJwZqP', 'CMlCEvq12kk_Ogrt_5KOHvHnpRiEfgRELxDsxoZHDxO0gyx6xGlQ2hnU6HPJOo-Gm2l6hTXvWZPNJylveEqIhw')
+createServiceConfiguration('cronofy', 'p7RnSo-0arld61IThftToaOd7wKJN4qx', 'eC34_meTGi05QtQcC7XJ-YSub6VJ-8r3HshSk67Kpt6_fBN_zYP4Sw9FVZhT-y0czGByN_DgX8SdLOawrw50OQ')

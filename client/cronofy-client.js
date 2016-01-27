@@ -1,12 +1,13 @@
 Cronofy = {};
 
-// Request Cronofy credentials for the user
+// Request Facebook credentials for the user
 //
 // @param options {optional}
 // @param credentialRequestCompleteCallback {Function} Callback function to call on
 //   completion. Takes one argument, credentialToken on success, or Error on
 //   error.
 Cronofy.requestCredential = function (options, credentialRequestCompleteCallback) {
+    console.log("*** cronofy-client called");
     // support both (options, callback) and (callback).
     if (!credentialRequestCompleteCallback && typeof options === 'function') {
         credentialRequestCompleteCallback = options;
@@ -27,20 +28,16 @@ Cronofy.requestCredential = function (options, credentialRequestCompleteCallback
     //   scope = options.requestPermissions.join(',');
 
     var loginStyle = OAuth._loginStyle('cronofy', config, options);
-    console.log("loginStyle: " + loginStyle);
-    console.dir('here are options: ' + options);
-    console.log('what is this: ' + OAuth._redirectUri('cronofy', config));
 
     var loginUrl =
         'https://app.cronofy.com/oauth/authorize?client_id=' + config.client_id +
+        '&avoid_linking=true' +
         '&redirect_uri=' + OAuth._redirectUri('cronofy', config) +
-        //'&redirect_uri=' + 'http://localhost:3000' +
         '&state=' + OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)+
         '&scope='+scope+
         '&response_type=code';
-
-    console.log(loginUrl);
-
+console.log("cronofy-client loginUrl: ");
+console.dir(loginUrl);
     OAuth.launchLogin({
         loginService: "cronofy",
         loginStyle: loginStyle,

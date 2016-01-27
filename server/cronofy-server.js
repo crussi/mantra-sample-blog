@@ -1,7 +1,7 @@
 Cronofy = {};
 
 OAuth.registerService('cronofy', 2, null, function(query) {
-    console.log('*** cronofy-server.js registerService');
+
     var response = getTokenResponse(query);
     var accessToken = response.accessToken;
     var refreshToken = response.refreshToken;
@@ -30,7 +30,6 @@ var getTokenResponse = function (query) {
 
     var responseContent;
     try {
-        console.log('*** cronofy-server.js getTokenResponse');
         // Request an access tokenc
         responseContent = HTTP.post(
             "https://api.cronofy.com/oauth/token", {
@@ -66,8 +65,6 @@ var getTokenResponse = function (query) {
 
 var getIdentity = function (accessToken, fields) {
     try {
-        console.log('*** cronofy-server.js getIdentity');
-
         return HTTP.get("https://api.cronofy.com/v1/calendars", {
             headers:{
                 "Authorization":"Bearer "+accessToken
@@ -80,6 +77,5 @@ var getIdentity = function (accessToken, fields) {
 };
 
 Cronofy.retrieveCredential = function(credentialToken, credentialSecret) {
-    console.log('*** cronofy-server.js retrieveCredential');
     return OAuth.retrieveCredential(credentialToken, credentialSecret);
 };
