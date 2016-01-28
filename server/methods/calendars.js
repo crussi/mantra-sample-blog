@@ -40,6 +40,32 @@ Meteor.methods({
             }));
         }
     },
+    'calendars.revokeAuthorization': function(){
+        //client_id - required - The client_id issued to you by Cronofy to authenticate your OAuth Client.
+        //client_secret - required - The client_secret issued to you by Cronofy to authenticate your OAuth Client.
+        //token - required - either a refresh_token or access_token for the user you need to revoke.
+
+        console.log("server method called calendars.revokeAuthorization");
+
+        if (Meteor.user() && Meteor.user().services.cronofy) {
+            var options = {
+                client_id: 'p7RnSo-0arld61IThftToaOd7wKJN4qx',
+                client_secret:'eC34_meTGi05QtQcC7XJ-YSub6VJ-8r3HshSk67Kpt6_fBN_zYP4Sw9FVZhT-y0czGByN_DgX8SdLOawrw50OQ',
+                token: Meteor.user().services.cronofy.accessToken
+
+            };
+            cronofy.revokeAuthorization(options,Meteor.bindEnvironment(function(err,res){
+                if (!err) {
+                    console.dir(res);
+                    var loggedInUser = Meteor.users.findOne({_id:Meteor.userId()});
+                } else {
+                    console.log("error encountered with refreshAccessToken:")
+                    console.dir(err);
+                }
+            }));
+        }
+    },
+
     'calendars.list': function() {
         console.log("server method called calendars.list");
 

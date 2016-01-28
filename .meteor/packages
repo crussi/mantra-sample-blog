@@ -27,3 +27,6 @@ accounts-google
 oauth
 oauth2
 momentjs:moment
+jagi:astronomy
+jagi:astronomy-validators
+jagi:astronomy-timestamp-behavior

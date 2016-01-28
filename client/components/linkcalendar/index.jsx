@@ -9,6 +9,7 @@ class LinkCalendar extends React.Component {
                 <button onClick={this.loginWithCronofy.bind(this)}>auth Cronofy</button>
                 <button onClick={this.logout.bind(this)}>logout</button>
                 <button onClick={this.refreshAccessToken.bind(this)}>Refresh Access Token</button>
+                <button onClick={this.revokeAuthorization.bind(this)}>Revoke authorization</button>
                 <button onClick={this.listCalendars.bind(this)}>list calendars</button>
                 <button onClick={this.calendarProfile.bind(this)}>Calendar Profile</button>
                 <button onClick={this.calendarFreeBusy.bind(this)}>Calendar Free Busy</button>
@@ -68,6 +69,17 @@ class LinkCalendar extends React.Component {
         Meteor.call('calendars.refreshAccessToken', (err) => {
             if (err) {
                 console.log("error occurred calling calendars.refreshAccessToken");
+                console.dir(err);
+                //return LocalState.set('SAVING_ERROR', err.message);
+            }
+        });
+    }
+
+    revokeAuthorization() {
+        console.log("revoke authorization clicked");
+        Meteor.call('calendars.revokeAuthorization', (err) => {
+            if (err) {
+                console.log("error occurred calling calendars.revokeAuthorization");
                 console.dir(err);
                 //return LocalState.set('SAVING_ERROR', err.message);
             }

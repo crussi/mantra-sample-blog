@@ -61,5 +61,24 @@ if (Meteor.isServer) {
             console.log("allow new Google user");
             return true;
         }
-    })
+    });
+
+    var currentUser;
+    var userCalendar;
+    Accounts.onLogin(function(user){
+        //if (user.services && user.services.cronofy) {
+        //
+        //}
+        //currentUser = new User();
+        //currentUser = Meteor.users.findOne({_id:Meteor.userId()});
+        console.log('onLogin hello world');
+        console.dir(user.user._id);
+        //currentUser = Meteor.users.findOne({_id:user.user._id});
+        currentUser = User.findOne({_id:user.user._id});
+
+        userCalendar = new UserCalendar();
+        //console.log('userCalendar');
+        console.dir(userCalendar);
+        //console.dir(currentUser);
+    });
 }
