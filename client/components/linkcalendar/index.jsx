@@ -16,6 +16,7 @@ class LinkCalendar extends React.Component {
                 <button onClick={this.calendarCreateEvent.bind(this)}>Create Event</button>
                 <button onClick={this.calendarDeleteEvent.bind(this)}>Delete Event</button>
                 <button onClick={this.calendarReadEvents.bind(this)}>Read Events</button>
+                <button onClick={this.calendarRefresh.bind(this)}>Refresh</button>
             </div>
         );
     }
@@ -170,7 +171,17 @@ class LinkCalendar extends React.Component {
         console.dir(options);
         Meteor.call('calendars.readEvents', options, (err) => {
             if (err) {
-                console.log("error occurred calling calendars.listEvents");
+                console.log("error occurred calling calendars.readEvents");
+                console.dir(err);
+            }
+        });
+    }
+
+    calendarRefresh() {
+        console.log('calendar refresh');
+        Meteor.call('calendars.refresh', (err) => {
+            if (err) {
+                console.log("error occurred calling calendars.refresh");
                 console.dir(err);
             }
         });

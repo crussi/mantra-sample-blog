@@ -1,37 +1,56 @@
 import {Meteor} from 'meteor/meteor';
 import {check} from 'meteor/check';
+//import _ from 'lodash';
 import cronofy from 'cronofy';
 
-//UserCalendars = new Meteor.Collection('usercalendars');
-if (Meteor.isServer) {
+UserCalendars = new Meteor.Collection('usercalendars');
+//if (Meteor.isServer) {
     CalendarProvider = Astro.Class({
         name: "CalendarProvider",
         fields: {
             name: 'string',
-            id: 'string',
-            name: 'string'
+            profileId: 'string',
+            profileName: 'string'
         }
     });
 
     LinkedCalendar = Astro.Class({
         name: "LinkedCalendar",
         fields: {
-            id: 'string',
+            calendarId: 'string',
             name: 'string',
             readonly: 'boolean',
             deleted: 'boolean',
-            primary: 'boolean'
+            primary: 'boolean',
+            selected: 'boolean'
         }
     });
 
     UserCalendar = Astro.Class({
         name: 'UserCalendar',
-        //collection: Meteor.users,
+        collection: UserCalendars,
         fields: {
-            accessToken: 'string',
-            refreshToken: 'string',
-            expiresAt: 'date',
-            calendars: {
+            userId: 'string',
+            provider: {
+                type: 'object',
+                nested: 'CalendarProvider',
+                default: function(){
+                    return {};
+                }
+            },
+            accessToken: {
+                type: 'string',
+                transient: true
+            },
+            refreshToken: {
+                type: 'string',
+                transient: true
+            },
+            expiresAt: {
+                type: 'date',
+                transient: true
+            },
+            availCalendars: {
                 type: 'array',
                 default: function() {
                     return [];
@@ -44,38 +63,21 @@ if (Meteor.isServer) {
             },
             expired: function(){
                 if (this.isLinked()) {
-                    return  moment().toDate() > this.expiresAt();
+                    return  moment().toDate() > this.expiresAt;
                 } else {
                     return false;
                 }
-            },
+            }
 
         },
         events: {
             afterInit: function () {
+                var self = this;
                 if (this.isLinked()){
+                    this.userId = Meteor.userId();
                     this.accessToken = Meteor.user().services.cronofy.accessToken;
                     this.refreshToken = Meteor.user().services.cronofy.refreshToken;
                     this.expiresAt = Meteor.user().services.cronofy.expiresAt;
-
-                    var options = {
-                        access_token: Meteor.user().services.cronofy.accessToken
-                    };
-
-                    cronofy.listCalendars(options,function(err,res){
-                        if (!err) {
-                            console.log("astro afterInit listCalendars callback info:");
-                            //console.dir(res);
-                            res.calendars.map(function(cal){
-                                if (!cal.calendar_deleted){
-                                    console.log(cal.calendar_name);
-                                }
-                            });
-                        } else {
-                            console.log("error encountered with listCalendars:")
-                            console.dir(err);
-                        }
-                    });
                 }
 
             }
@@ -83,4 +85,4 @@ if (Meteor.isServer) {
     });
 
 
-}
+//}
