@@ -24,6 +24,7 @@
         <item url="file://$USER_HOME$/.meteor/packages/coffeescript/1.0.12-modules.4/web.browser/coffeescript_test_setup.js" />
         <item url="file://$USER_HOME$/.meteor/packages/coffeescript/1.0.12-modules.4/web.browser/coffeescript_tests.js" />
         <item url="file://$USER_HOME$/.meteor/packages/coffeescript/1.0.12-modules.4/web.browser/bare_tests.js" />
+        <item url="file://$USER_HOME$/.meteor/packages/infinitedg_winston/0.7.3/web.browser/packages/infinitedg:winston.js" />
         <item url="file://$USER_HOME$/.meteor/packages/accounts-google/1.0.6/web.browser/google.js" />
         <item url="file://$USER_HOME$/.meteor/packages/accounts-google/1.0.6/web.browser/google_login_button.css" />
         <item url="file://$USER_HOME$/.meteor/packages/allow-deny/1.0.1-modules.4/web.browser/allow-deny.js" />
@@ -366,6 +367,7 @@
       <root url="file://$USER_HOME$/.meteor/packages/coffeescript/1.0.12-modules.4/web.browser/coffeescript_test_setup.js" />
       <root url="file://$USER_HOME$/.meteor/packages/coffeescript/1.0.12-modules.4/web.browser/coffeescript_tests.js" />
       <root url="file://$USER_HOME$/.meteor/packages/coffeescript/1.0.12-modules.4/web.browser/bare_tests.js" />
+      <root url="file://$USER_HOME$/.meteor/packages/infinitedg_winston/0.7.3/web.browser/packages/infinitedg:winston.js" />
       <root url="file://$USER_HOME$/.meteor/packages/accounts-google/1.0.6/web.browser/google.js" />
       <root url="file://$USER_HOME$/.meteor/packages/accounts-google/1.0.6/web.browser/google_login_button.css" />
       <root url="file://$USER_HOME$/.meteor/packages/allow-deny/1.0.1-modules.4/web.browser/allow-deny.js" />

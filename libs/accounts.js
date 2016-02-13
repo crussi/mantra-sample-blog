@@ -63,25 +63,5 @@ if (Meteor.isServer) {
         }
     });
 
-    var currentUser;
-    var userCalendar;
-    Accounts.onLogin(function(user){
-        //if (user.services && user.services.cronofy) {
-        //
-        //}
-        //currentUser = new User();
-        //currentUser = Meteor.users.findOne({_id:Meteor.userId()});
-        //console.log('onLogin hello world');
-        //console.dir(user.user._id);
-        //currentUser = Meteor.users.findOne({_id:user.user._id});
-        currentUser = User.findOne({_id:user.user._id});
 
-        userCalendar = new UserCalendar();
-        Meteor.setTimeout(function(){
-            //console.log('userCalendar');
-            //console.dir(userCalendar);
-            //console.dir(currentUser);
-            userCalendar.save();
-        },2000);
-    });
 }

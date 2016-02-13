@@ -5,53 +5,40 @@ import cronofy from 'cronofy';
 
 UserCalendars = new Meteor.Collection('usercalendars');
 //if (Meteor.isServer) {
-    CalendarProvider = Astro.Class({
-        name: "CalendarProvider",
-        fields: {
-            name: 'string',
-            profileId: 'string',
-            profileName: 'string'
-        }
-    });
+//    CalendarProvider = Astro.Class({
+//        name: "CalendarProvider",
+//        fields: {
+//            name: 'string',
+//            profileId: 'string',
+//            profileName: 'string'
+//        }
+//    });
 
     LinkedCalendar = Astro.Class({
         name: "LinkedCalendar",
         fields: {
-            calendarId: 'string',
-            name: 'string',
-            readonly: 'boolean',
-            deleted: 'boolean',
-            primary: 'boolean',
+            provider_name: 'string',
+            provider_id: 'string',
+            profile_name: 'string',
+            calendar_id: 'string',
+            calendar_name: 'string',
+            calendar_readonly: 'boolean',
+            calendar_deleted: 'boolean',
+            calendar_primary: 'boolean',
             selected: 'boolean'
         }
     });
+
+//TODO: Need to make this multi-tenancy
 
     UserCalendar = Astro.Class({
         name: 'UserCalendar',
         collection: UserCalendars,
         fields: {
             userId: 'string',
-            provider: {
-                type: 'object',
-                nested: 'CalendarProvider',
-                default: function(){
-                    return {};
-                }
-            },
-            accessToken: {
-                type: 'string',
-                transient: true
-            },
-            refreshToken: {
-                type: 'string',
-                transient: true
-            },
-            expiresAt: {
-                type: 'date',
-                transient: true
-            },
             availCalendars: {
                 type: 'array',
+                nested:'LinkedCalendar',
                 default: function() {
                     return [];
                 }
@@ -60,14 +47,14 @@ UserCalendars = new Meteor.Collection('usercalendars');
         methods: {
             isLinked: function(){
                 return (Meteor.user().services && Meteor.user().services.cronofy);
-            },
-            expired: function(){
-                if (this.isLinked()) {
-                    return  moment().toDate() > this.expiresAt;
-                } else {
-                    return false;
-                }
             }
+            //expired: function(){
+            //    if (this.isLinked()) {
+            //        return  moment().toDate() > this.expiresAt;
+            //    } else {
+            //        return false;
+            //    }
+            //}
 
         },
         events: {
@@ -75,9 +62,6 @@ UserCalendars = new Meteor.Collection('usercalendars');
                 var self = this;
                 if (this.isLinked()){
                     this.userId = Meteor.userId();
-                    this.accessToken = Meteor.user().services.cronofy.accessToken;
-                    this.refreshToken = Meteor.user().services.cronofy.refreshToken;
-                    this.expiresAt = Meteor.user().services.cronofy.expiresAt;
                 }
 
             }
