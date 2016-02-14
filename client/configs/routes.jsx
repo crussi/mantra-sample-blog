@@ -8,6 +8,7 @@ import PostList from '../containers/postlist';
 import Post from '../containers/post';
 import NewPost from '../containers/newpost';
 import LinkCalendar from '../containers/linkcalendar';
+import CalendarList from '../containers/calendarlist';
 
 export const initRoutes = (context, actions) => {
   const MainLayoutCtx = injectDeps(context, actions)(MainLayout);
@@ -45,6 +46,14 @@ export const initRoutes = (context, actions) => {
         mount(MainLayoutCtx, {
             content: () => (<LinkCalendar/>)
         });
+    }
+  });
+  FlowRouter.route('/calendar-list', {
+    name: 'calendar.list',
+    action() {
+      mount(MainLayoutCtx, {
+        content: () => (<CalendarList />)
+      });
     }
   });
   FlowRouter.route('/_oauth/cronofy', {

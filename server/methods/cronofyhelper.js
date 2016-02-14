@@ -1,6 +1,7 @@
 import cronofy from 'cronofy';
+import {UserCalendars} from '/libs/collections';
 
-var cronofyHelper = {
+const cronofyHelper = {
         hasLinkedCalendar: function(){
             return Meteor.user() && Meteor.user().services.cronofy;
         },
@@ -231,7 +232,7 @@ var cronofyHelper = {
                     match = true;
                     userCal.availCalendars[j].set('calendar_name', cal.calendar_name);
                     userCal.availCalendars[j].set('calendar_readonly', cal.calendar_readonly);
-                    userCal.availCalendars[j].set('calendar_deleted', true);
+                    userCal.availCalendars[j].set('calendar_deleted', cal.calendar_deleted);
                     userCal.availCalendars[j].set('calendar_primary', cal.calendar_primary);
                     break;
                 }
