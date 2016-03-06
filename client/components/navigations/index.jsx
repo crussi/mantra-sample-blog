@@ -7,6 +7,7 @@ const Navigations = () => (
     <a href="/new-post">New Post</a> |
     <a href="/link-calendar">Link calendar</a> |
     <a href="/calendar-list">Available calendars</a>
+    <a href="/cal-event-list">Calendar events</a>
   </div>
 );
 

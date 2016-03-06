@@ -9,6 +9,7 @@ import Post from '../containers/post';
 import NewPost from '../containers/newpost';
 import LinkCalendar from '../containers/linkcalendar';
 import CalendarList from '../containers/calendarlist';
+import CalEventList from '../containers/caleventlist';
 
 export const initRoutes = (context, actions) => {
   const MainLayoutCtx = injectDeps(context, actions)(MainLayout);
@@ -53,6 +54,14 @@ export const initRoutes = (context, actions) => {
     action() {
       mount(MainLayoutCtx, {
         content: () => (<CalendarList />)
+      });
+    }
+  });
+  FlowRouter.route('/cal-event-list', {
+    name: 'cal-event.list',
+    action() {
+      mount(MainLayoutCtx, {
+        content: () => (<CalEventList />)
       });
     }
   });

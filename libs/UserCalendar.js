@@ -1,10 +1,5 @@
 import {Meteor} from 'meteor/meteor';
-import {check} from 'meteor/check';
 import {UserCalendars} from '/libs/collections';
-//import _ from 'lodash';
-import cronofy from 'cronofy';
-
-//UserCalendars = new Meteor.Collection('usercalendars');
 
 LinkedCalendar = Astro.Class({
     name: "LinkedCalendar",

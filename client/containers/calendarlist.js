@@ -10,7 +10,17 @@ export const composer = ({context}, onData) => {
     }
 };
 
+export const depsMapper = (context, actions) => ({
+
+    select: actions.calendarlist.select,
+    createEvent: actions.calendarlist.createEvent,
+    deleteEvent: actions.calendarlist.deleteEvent,
+    //readEvents: actions.calendarevents.readEvents,
+    clearErrors: actions.calendarlist.clearErrors,
+    context: () => context
+});
+
 export default composeAll(
     composeWithTracker(composer),
-    useDeps()
+    useDeps(depsMapper)
 )(CalendarList);

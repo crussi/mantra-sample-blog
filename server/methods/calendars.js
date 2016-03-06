@@ -2,33 +2,34 @@
 import {Meteor} from 'meteor/meteor';
 import {check} from 'meteor/check';
 import cronofyHelper from './cronofyhelper';
-
+import cronofyHelperX from './cronofyHelperX';
+import Future from 'fibers/future';
 
 
 Meteor.methods({
     'calendars.refreshAccessToken': function(){
         console.log("server method called calendars.refreshAccessToken");
-        cronofyHelper.refreshAccessToken(function(status,res){
+        cronofyHelper(this.userId).refreshAccessToken(function(status,res){
            console.log('status: ' + status);
         });
     },
     'calendars.revokeAuthorization': function(){
         console.log("server method called calendars.revokeAuthorization");
-        cronofyHelper.revokeAuthorization(function(status,res){
+        cronofyHelper(this.userId).revokeAuthorization(function(status,res){
             console.log('status: ' + status);
         });
     },
 
     'calendars.list': function() {
         console.log("server method called calendars.list");
-        cronofyHelper.calendarList(function(status,res){
+        cronofyHelper(this.userId).calendarList(function(status,res){
             console.log('status: ' + status);
             console.dir(res);
         });
     },
     'calendars.profile': function(){
         console.log("meteor method calendars.profile");
-        cronofyHelper.userProfile(function(status,res){
+        cronofyHelper(this.userId).userProfile(function(status,res){
             console.log('status: ' + status);
             console.dir(res);
         });
@@ -48,14 +49,16 @@ Meteor.methods({
             tzid:"America/Los_Angeles"
         };
 
-        cronofyHelper.freeBusy(options, function(status,res){
+        cronofyHelper(this.userId).freeBusy(options, function(status,res){
             console.log('status: ' + status);
             console.dir(res);
         });
     },
     'calendars.createEvent': function(options){
         console.log("meteor method create event");
+        console.dir(options);
         check(options,{
+            calendar_id: String,
             event_id: String,
             start: String,
             end: String,
@@ -63,7 +66,7 @@ Meteor.methods({
             description: String,
             tzid:String
         });
-        cronofyHelper.createEvent(options, function(status,res){
+        cronofyHelper(this.userId).createEvent(options, function(status,res){
             console.log('status: ' + status);
             console.dir(res);
         });
@@ -73,7 +76,7 @@ Meteor.methods({
         check(options, {
             event_id: String
         });
-        cronofyHelper.deleteEvent(options, function(status,res){
+        cronofyHelper(this.userId).deleteEvent(options, function(status,res){
             console.log('status: ' + status);
             console.dir(res);
         });
@@ -88,15 +91,72 @@ Meteor.methods({
             include_deleted: Boolean,
             include_managed: Boolean
         });
-        cronofyHelper.readEvents(options, function(status,res){
+        cronofyHelper(this.userId).readEvents(options, function(status,res){
             console.log('status: ' + status);
             console.dir(res);
         });
     },
+    'calendars.readEventsNew': function(options){
+        console.log("meteor method readEventsNew");
+        check(options, {
+            from: String,
+            to: String,
+            tzid: String,
+            include_deleted: Boolean,
+            include_managed: Boolean
+        });
+        this.unblock();
+        var future = new Future();
+        cronofyHelper(this.userId).readEvents(options, function(status,res){
+            let userevents = new UserEvents();
+            if (status != 'error'){
+                let page = new cal_Page();
+                let i = 0, j = 0;
+                page.set('current',res.pages.current);
+                page.set('total',res.pages.total);
+                page.set('next_page',res.pages.next_page ? res.pages.next_page : '');
+                userevents.set('pages',page);
+                for (i=0; i < res.events.length; i++){
+                    let evt = new cal_Event();
+                    let cronofy = res.events[i];
+
+                    evt.set('calendar_id',cronofy.calendar_id ? cronofy.calendar_id : '');
+                    evt.set('created',cronofy.created);
+                    evt.set('deleted',cronofy.deleted);
+                    evt.set('description',cronofy.description ? cronofy.description : '');
+                    evt.set('end',cronofy.end);
+                    evt.set('event_id',cronofy.event_id ? cronofy.event_id : '');
+                    evt.set('event_uid',cronofy.event_uid ? cronofy.event_uid : '');
+                    evt.set('event_status',cronofy.event_status ? cronofy.event_status : '');
+                    evt.set('participation_status',cronofy.participation_status ? cronofy.participation_status : '');
+                    evt.set('start',cronofy.start);
+                    evt.set('status',cronofy.status);
+                    evt.set('summary',cronofy.summary ? cronofy.summary : '');
+                    evt.set('transparency',cronofy.transparency ? cronofy.transparency : '');
+                    evt.set('updated',cronofy.updated);
+
+                    for (j=0; j < cronofy.attendees.length; j++){
+                        let attendee = new cal_Attendee;
+                        attendee.set('email',cronofy.attendees[j].email ? cronofy.attendees[j].email : '');
+                        attendee.set('email',cronofy.attendees[j].display_name ? cronofy.attendees[j].display_name : '');
+                        attendee.set('email',cronofy.attendees[j].status ? cronofy.attendees[j].status : '');
+                        evt.push('attendees',attendee);
+                    }
+                    let loc = new cal_Location;
+                    loc.set('description',cronofy.location ? cronofy.location : '');
+                    evt.set('location',loc);
+                    userevents.push('events',evt);
+                }
+            }
+            future.return({"status":status,"res":userevents});
+
+        });
+        return future.wait();
+    },
     'calendars.refresh': function(){
         //TODO: this should not be a method apart from the prototype
         console.log("meteor method refresh");
-        cronofyHelper.updateUserCalendar(function(status,res){
+        cronofyHelper(this.userId).updateUserCalendar(function(status,res){
            console.log('refresh status: ' + status);
         });
     }

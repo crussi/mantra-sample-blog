@@ -13,10 +13,8 @@ class LinkCalendar extends React.Component {
                 <button onClick={this.listCalendars.bind(this)}>list calendars</button>
                 <button onClick={this.calendarProfile.bind(this)}>Calendar Profile</button>
                 <button onClick={this.calendarFreeBusy.bind(this)}>Calendar Free Busy</button>
-                <button onClick={this.calendarCreateEvent.bind(this)}>Create Event</button>
-                <button onClick={this.calendarDeleteEvent.bind(this)}>Delete Event</button>
-                <button onClick={this.calendarReadEvents.bind(this)}>Read Events</button>
                 <button onClick={this.calendarRefresh.bind(this)}>Refresh</button>
+
             </div>
         );
     }
@@ -118,29 +116,29 @@ class LinkCalendar extends React.Component {
         });
     }
 
-    calendarCreateEvent() {
-        console.log("calendar createEvent clicked");
-        var date = new Date();
-        var start = moment(date).add(1,'h').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
-        var end = moment(date).add(2,'h').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
-        var event_id = Random.id();
-        Session.set('event_id', event_id);
-        console.log('event_id: ' + event_id);
-        var options = {
-            event_id: event_id,
-            start: start,
-            end: end,
-            summary: "hello world",
-            description: "Meet at Starbucks to say, hello world!",
-            tzid:"America/Los_Angeles"
-        }
-        Meteor.call('calendars.createEvent', options, (err) => {
-            if (err) {
-                console.log("error occurred calling calendars.createEvent");
-                console.dir(err);
-            }
-        });
-    }
+    //calendarCreateEvent() {
+    //    console.log("calendar createEvent clicked");
+    //    var date = new Date();
+    //    var start = moment(date).add(1,'h').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+    //    var end = moment(date).add(2,'h').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+    //    var event_id = Random.id();
+    //    Session.set('event_id', event_id);
+    //    console.log('event_id: ' + event_id);
+    //    var options = {
+    //        event_id: event_id,
+    //        start: start,
+    //        end: end,
+    //        summary: "hello world",
+    //        description: "Meet at Starbucks to say, hello world!",
+    //        tzid:"America/Los_Angeles"
+    //    }
+    //    Meteor.call('calendars.createEvent', options, (err) => {
+    //        if (err) {
+    //            console.log("error occurred calling calendars.createEvent");
+    //            console.dir(err);
+    //        }
+    //    });
+    //}
 
     calendarDeleteEvent() {
         console.log("calendar deleteEvent clicked");
