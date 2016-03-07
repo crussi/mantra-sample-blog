@@ -3,48 +3,44 @@ import {UserCalendars} from '/libs/collections';
 
 
 const cronofyHelper = function(userId) {
+    //store userId for use throughout functions
     var self = this;
     this.userId = userId;
     this.user = Meteor.users.findOne({_id: this.userId});
     return {
         hasLinkedCalendar: function () {
+            //Did the user authenticate with Cronofy?
             return self.user && self.user.services.cronofy ? true : false;
         },
-        currentUserId: function(){
-            console.log("currentUserId self.userId: " + self.userId);
-            return self.userId || "no user id";
-        },
-        currentUser: function () {
-            return Meteor.users.findOne({_id: self.userId});
-        },
-        addUserId: function (errMsg) {
+        attachUserId: function (errMsg) {
             check(errMsg, String);
-            return errMsg + " for userId: " + this.currentUserId();
+            //Attach userId to any logged errors
+            let currentUserId = self.userId || "no user id";
+            let e = errMsg + " for userId: " + currentUserId;
+            return e;
         },
         isExpired: function () {
+            //Has the Cronofy authentication token expired?
             if (this.hasLinkedCalendar()) {
-                let user = this.currentUser();
                 return moment().toDate() > self.user.services.cronofy.expiresAt;
             } else {
-                console.log("isExpired ... no linked calendar");
                 return true;
             }
         },
         config: function () {
+            //Retrieve service configuration info
             var config = ServiceConfiguration.configurations.findOne({service: 'cronofy'});
             if (!config) {
-                Winston.log('error', this.addUserId("Service configuration error.  Service 'cronofy'"));
+                Winston.log('error', this.attachUserId("Service configuration error.  Service 'cronofy'"));
                 throw new ServiceConfiguration.ConfigError();
             }
             return config;
         },
         checkLinkedCalendar: function (callback) {
-            //check(userId, String);
+            //Validate existence of linked calendar, refresh access token if necessary
             check(callback, Function);
-            //For testing ... to make access token expired on purpose
-            //Meteor.users.update({_id:Meteor.userId()},{$set:{"services.cronofy.expiresAt":moment().add(-50000,'s').toDate()}});
             if (!this.hasLinkedCalendar()) {
-                Winston.log('error', this.addUserId("Cronofy - checkLinkedCalendar - no linked calendar found"));
+                Winston.log('error', this.attachUserId("Cronofy - checkLinkedCalendar - no linked calendar found"));
                 callback('error');
                 return false;
             } else {
@@ -57,13 +53,11 @@ const cronofyHelper = function(userId) {
 
         },
         refreshAccessToken: function (callback) {
-            check(callback, Function);
             //Don't call checkLinkedCalendar here!  Infinite loop.
-            //this.checkLinkedCalendar(callback);
-            //var self = this;
-            let user = this.currentUser();
+            //Refresh access token and update Meteor user account information
+            check(callback, Function);
             if (!this.hasLinkedCalendar()) {
-                Winston.log('error', this.addUserId("Cronofy - refreshAccessToken - no linked calendar found"));
+                Winston.log('error', this.attachUserId("Cronofy - refreshAccessToken - no linked calendar found"));
                 callback('error');
             } else {
                 var config = this.config();
@@ -73,7 +67,7 @@ const cronofyHelper = function(userId) {
                     grant_type: 'refresh_token',
                     refresh_token: self.user.services.cronofy.refreshToken
                 };
-                cronofy.refreshAccessToken(options, Meteor.bindEnvironment(function (err, res) {
+                cronofy.refreshAccessToken(options, Meteor.bindEnvironment((err, res) => {
                     if (!err) {
                         //why are you getting logged in user when all you need is the userId?
                         Meteor.users.update({_id: self.userId}, {$set: {"services.cronofy.accessToken": res.access_token}});
@@ -81,17 +75,16 @@ const cronofyHelper = function(userId) {
                         Meteor.users.update({_id: self.userId}, {$set: {"services.cronofy.expiresAt": moment().add(res.expires_in, 's').toDate()}});
                         callback('success', res);
                     } else {
-                        Winston.log('error', self.addUserId("Cronofy - refreshAccessToken - unable to refresh access token"), err);
+                        Winston.log('error', this.attachUserId("Cronofy - refreshAccessToken - unable to refresh access token"));
                         callback('error');
                     }
                 }));
             }
         },
         revokeAuthorization: function (callback) {
+            //Revoke this user's access token, user must reauthenticate with Cronofy to continue
             check(callback, Function);
-            //var self = this;
-            let user = this.currentUser();
-            this.checkLinkedCalendar(function (status, res) {
+            this.checkLinkedCalendar( (status, res) => {
                 if (status == 'success') {
                     var config = this.config();
                     var options = {
@@ -99,11 +92,11 @@ const cronofyHelper = function(userId) {
                         client_secret: config.client_secret,
                         token: self.user.services.cronofy.accessToken
                     };
-                    cronofy.revokeAuthorization(options, Meteor.bindEnvironment(function (err, res) {
+                    cronofy.revokeAuthorization(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
                             callback('success', res);
                         } else {
-                            Winston.log('error', self.addUserId("Cronofy - revokeAuthorization - unable to revoke authorization"), err);
+                            Winston.log('error', self.attachUserId("Cronofy - revokeAuthorization - unable to revoke authorization"));
                             callback('error');
                         }
                     }));
@@ -113,20 +106,21 @@ const cronofyHelper = function(userId) {
             });
         },
         calendarList: function (callback) {
+            //Produce a list of available calendars
             check(callback, Function);
-            //var self = this;
-            //let user = this.currentUser();
-            this.checkLinkedCalendar(function (status, res) {
+            that = this;
+            //this.callback = callback;
+            this.checkLinkedCalendar((status, res) => {
                 if (status == 'success') {
                     var options = {
                         access_token: self.user.services.cronofy.accessToken
                     };
-                    cronofy.listCalendars(options, Meteor.bindEnvironment(function (err, res) {
+                    cronofy.listCalendars(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
                             Winston.log('info', 'success in calendarList');
                             callback('success', res);
                         } else {
-                            Winston.log('error', self.addUserId("Cronofy - calendarList - unable to fetch calendar list"), err);
+                            Winston.log('error', this.attachUserId("Cronofy - calendarList - unable to fetch calendar list"));
                             callback('error');
                         }
                     }));
@@ -136,19 +130,18 @@ const cronofyHelper = function(userId) {
             });
         },
         userProfile: function (callback) {
+            //Output the user's Cronofy profile
             check(callback, Function);
-            //var self = this;
-            let user = this.currentUser();
-            this.checkLinkedCalendar(function (status, res) {
+            this.checkLinkedCalendar((status, res) => {
                 if (status == 'success') {
                     var options = {
                         access_token: self.user.services.cronofy.accessToken
                     };
-                    cronofy.profileInformation(options, Meteor.bindEnvironment(function (err, res) {
+                    cronofy.profileInformation(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
                             callback('success', res);
                         } else {
-                            Winston.log('error', self.addUserId("Cronofy - userProfile - unable to fetch profile information"), err);
+                            Winston.log('error', this.attachUserId("Cronofy - userProfile - unable to fetch profile information"));
                             callback('error');
                         }
                     }));
@@ -158,21 +151,19 @@ const cronofyHelper = function(userId) {
             });
         },
         freeBusy: function (options, callback) {
+            //Output "free | busy" status for calenar options provided
             check(options, {from: String, to: String, tzid: String});
             check(callback, Function);
-            this.checkLinkedCalendar(callback);
-            //var self = this;
-            let user = this.currentUser();
-            this.checkLinkedCalendar(function (status, res) {
+            this.checkLinkedCalendar((status, res) => {
                 if (status == 'success') {
                     options = _.extend(options, {
                         access_token: self.user.services.cronofy.accessToken
                     });
-                    cronofy.freeBusy(options, Meteor.bindEnvironment(function (err, res) {
+                    cronofy.freeBusy(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
                             callback('success', res);
                         } else {
-                            Winston.log('error', self.addUserId("Cronofy - freeBusy - unable to fetch free-busy information."), options, err);
+                            Winston.log('error', this.attachUserId("Cronofy - freeBusy - unable to fetch free-busy information."), options);
                             callback('error');
                         }
                     }));
@@ -182,6 +173,7 @@ const cronofyHelper = function(userId) {
             });
         },
         createEvent: function (options, callback) {
+            //Create a calendar event for the options specified
             check(options, {
                 calendar_id: String,
                 event_id: String,
@@ -192,18 +184,16 @@ const cronofyHelper = function(userId) {
                 tzid: String
             });
             check(callback, Function);
-            //var self = this;
-            let user = this.currentUser();
-            this.checkLinkedCalendar(function (status, res) {
+            this.checkLinkedCalendar((status, res) => {
                 if (status == 'success') {
                     options = _.extend({
                         access_token: self.user.services.cronofy.accessToken
                     }, options);
-                    cronofy.createEvent(options, Meteor.bindEnvironment(function (err, res) {
+                    cronofy.createEvent(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
                             callback('success', res);
                         } else {
-                            Winston.log('error', self.addUserId("Cronofy - createEvent - unable to create event."), options, err);
+                            Winston.log('error', this.attachUserId("Cronofy - createEvent - unable to create event."), options);
                             callback('error');
                         }
                     }));
@@ -213,25 +203,23 @@ const cronofyHelper = function(userId) {
             });
         },
         deleteEvent: function (options, callback) {
+            //Delete specified calendar event
             check(options, {
                 event_id: String
             });
             check(callback, Function);
-            //var self = this;
-            let user = this.currentUser();
-            this.checkLinkedCalendar(function (status, res) {
+            this.checkLinkedCalendar((status, res) => {
                 if (status == 'success') {
                     options = _.extend({
                         calendar_id: 'cal_Vpg1U7TM0HgKADQw_pjFndgu883IoFKuKDX0Lyw',
                         access_token: self.user.services.cronofy.accessToken
                     }, options);
 
-                    cronofy.deleteEvent(options, Meteor.bindEnvironment(function (err, res) {
+                    cronofy.deleteEvent(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
-                            console.log("success deleting event");
                             callback('success', res);
                         } else {
-                            Winston.log('error', self.addUserId("Cronofy - deleteEvent - unable to delete event."), options, err);
+                            Winston.log('error', this.attachUserId("Cronofy - deleteEvent - unable to delete event."), options, err);
                             callback('error');
                         }
                     }));
@@ -241,7 +229,7 @@ const cronofyHelper = function(userId) {
             });
         },
         readEvents: function (options, callback) {
-            //check(userId, String);
+            //Read all events for the options specified
             check(options, {
                 from: String,
                 to: String,
@@ -250,19 +238,17 @@ const cronofyHelper = function(userId) {
                 include_managed: Boolean
             });
             check(callback, Function);
-            //var self = this;
-            let user = this.currentUser();
-            this.checkLinkedCalendar(function (status, res) {
+            this.checkLinkedCalendar((status, res) => {
                 if (status == 'success') {
                     options = _.extend({
                         access_token: self.user.services.cronofy.accessToken
                     }, options);
 
-                    cronofy.readEvents(options, Meteor.bindEnvironment(function (err, res) {
+                    cronofy.readEvents(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
                             callback('success', res);
                         } else {
-                            Winston.log('error', self.addUserId("Cronofy - readEvents - unable to read events."), options, err);
+                            Winston.log('error', this.attachUserId("Cronofy - readEvents - unable to read events."), options, err);
                             callback('error');
                         }
                     }));
@@ -272,6 +258,7 @@ const cronofyHelper = function(userId) {
             });
         },
         newLinkedCalendar: function (cal) {
+            //Used to build a new linked calendar
             check(cal, {
                     provider_name: String, profile_id: String, profile_name: String, calendar_id: String,
                     calendar_name: String, calendar_readonly: Boolean, calendar_deleted: Boolean, calendar_primary: Boolean
@@ -290,7 +277,6 @@ const cronofyHelper = function(userId) {
             return linkedCalendar;
         },
         updateLinkedCalendar: function (userCal, cal) {
-            //check(userCal,Object);
             check(cal, {
                     provider_name: String, profile_id: String, profile_name: String, calendar_id: String,
                     calendar_name: String, calendar_readonly: Boolean, calendar_deleted: Boolean, calendar_primary: Boolean
@@ -310,16 +296,18 @@ const cronofyHelper = function(userId) {
             return match;
         },
         updateUserCalendar: function (callback) {
+            //Update the current user's calendars
             check(callback, Function);
             var that = this;
-            this.calendarList(function (status, res) {
+            this.calendarList((status, res) => {
+                console.log('back from call from calendarList');
                 var match = false, newLinkedCals = [];
                 if (status == 'success') {
                     var userCal = UserCalendars.findOne({userId: self.userId});
                     if (userCal) {
                         res.calendars.map(function (cal, i) {
                             if (!that.updateLinkedCalendar(userCal, cal)) {
-                                newLinkedCals.push(self.newLinkedCalendar(cal));
+                                newLinkedCals.push(that.newLinkedCalendar(cal));
                             }
                         });
                         //Done this way due to mongo err: Exception in callback of async function: MongoError:
@@ -329,12 +317,14 @@ const cronofyHelper = function(userId) {
                             userCal.push('availCalendars', newLinkedCals[n]);
                         }
                         userCal.save();
+                        console.log("after userCal.save");
                     } else {
                         userCal = new UserCalendar();
                         res.calendars.map(function (cal, i) {
-                            userCal.push('availCalendars', self.newLinkedCalendar(cal));
+                            userCal.push('availCalendars', that.newLinkedCalendar(cal));
                         });
                         userCal.save();
+                        console.log("after new userCal.save");
                     }
 
                 } else {
