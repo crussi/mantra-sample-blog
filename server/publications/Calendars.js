@@ -31,16 +31,26 @@ Meteor.publish('cal-event-list', function () {
         include_managed: true
     };
 
-    cronofyHelper.readEvents(this.userId, options, function(status,res){
-        let userevents = new UserEvents();
+
+
+    cronofyHelper(this.userId).readEvents(options, function (status,res) {
+        console.log("back from readEvents");
+        //console.dir(UserEvents());
+        //console.dir(UserCalendars());
+        //var uc = new UserCalendars;
+        //console.log('a');
         if (status != 'error'){
+            var userevent = new UserEvent();
+            console.log('a.1');
             let page = new cal_Page();
             let i = 0, j = 0;
             page.set('current',res.pages.current);
             page.set('total',res.pages.total);
             page.set('next_page',res.pages.next_page ? res.pages.next_page : '');
-            userevents.set('pages',page);
+            userevent.set('pages',page);
+            console.log('b len: ' + res.events.length);
             for (i=0; i < res.events.length; i++){
+                console.log('c i: ' + i);
                 let evt = new cal_Event();
                 let cronofy = res.events[i];
 
@@ -69,8 +79,11 @@ Meteor.publish('cal-event-list', function () {
                 let loc = new cal_Location;
                 loc.set('description',cronofy.location ? cronofy.location : '');
                 evt.set('location',loc);
-                userevents.push('events',evt);
+                userevent.push('events',evt);
             }
+            //console.dir(userevent);
+            console.log('d');
+            userevent.save();
         } else {
             console.log("an error occurred");
         }
@@ -78,9 +91,11 @@ Meteor.publish('cal-event-list', function () {
 
 
 
-
-        return UserEvents.find({});
+        //console.log("before actual publish return");
+        //return UserEvents.findOne({});
     });
+    console.log("before actual publish return");
+    return UserEvents.find({});
 });
 
 //Meteor.publish('calendars.single', function (calendarId) {

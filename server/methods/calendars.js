@@ -2,7 +2,6 @@
 import {Meteor} from 'meteor/meteor';
 import {check} from 'meteor/check';
 import cronofyHelper from './cronofyhelper';
-import cronofyHelperX from './cronofyHelperX';
 import Future from 'fibers/future';
 
 

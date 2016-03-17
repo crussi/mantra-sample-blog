@@ -35,7 +35,7 @@ class LinkCalendar extends React.Component {
                 console.log('google login error');
                 return console.log(error.reason);
             } else {
-                console.log('google login success');//Meteor.user().services.google.refreshToken;
+                //console.log('google login success');//Meteor.user().services.google.refreshToken;
             }
         });
     }
@@ -52,7 +52,7 @@ class LinkCalendar extends React.Component {
                 //console.dir(error);
                 //return console.log(error.reason);
             } else {
-                console.log('cronofy login success');
+                //console.log('cronofy login success');
             }
         });
     }
@@ -86,7 +86,7 @@ class LinkCalendar extends React.Component {
     }
 
     listCalendars() {
-        console.log("link calendar clicked");
+        //console.log("link calendar clicked");
         Meteor.call('calendars.list', (err) => {
             if (err) {
                 console.log("error occurred calling calendars.list");

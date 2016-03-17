@@ -1,5 +1,5 @@
 import {Meteor} from 'meteor/meteor';
-//import {UserCalendars} from '/libs/collections';
+import {UserEvents} from '/libs/collections';
 
 cal_Location = Astro.Class({
     name: 'cal_Location',
@@ -60,8 +60,9 @@ cal_Page = Astro.Class({
     }
 });
 
-UserEvents = Astro.Class({
+UserEvent = Astro.Class({
     name: 'UserEvents',
+    collection: UserEvents,
     fields:{
         events:{
             type: 'array',

@@ -1,6 +1,6 @@
 import cronofy from 'cronofy';
 import {UserCalendars} from '/libs/collections';
-
+import {UserEvents} from '/libs/collections';
 
 const cronofyHelper = function(userId) {
     //store userId for use throughout functions
@@ -246,6 +246,7 @@ const cronofyHelper = function(userId) {
 
                     cronofy.readEvents(options, Meteor.bindEnvironment((err, res) => {
                         if (!err) {
+                            console.log("readEvents success callback ...");
                             callback('success', res);
                         } else {
                             Winston.log('error', this.attachUserId("Cronofy - readEvents - unable to read events."), options, err);
