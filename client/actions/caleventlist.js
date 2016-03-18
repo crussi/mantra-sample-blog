@@ -5,7 +5,7 @@ export default {
         //const id = Meteor.uuid();
         // There is a method stub for this in the config/method_stubs
         // That's how we are doing latency compensation
-        Meteor.call('calendars.readEventsNew', options, (err,res) => {
+        Meteor.call('calendars.readEvents', options, (err,res) => {
             if (res.status=='error') {
                 return LocalState.set('READ_EVENT_ERROR', "Cronofy read events service call failed.");
             } else {

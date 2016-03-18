@@ -258,6 +258,68 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
+        loadEvents: function(options, callback) {
+            this.readEvents(options, (status, res) => {
+                if (status == 'success') {
+                    console.log('loadEvents readEvents success');
+                    const usercalendar = UserCalendars.findOne({userId: self.userId});
+                    //console.dir(usercalendar);
+
+                    var userevent = new UserEvent();
+                    console.log('a.1');
+                    let page = new cal_Page();
+                    let i = 0, j = 0;
+                    page.set('current',res.pages.current);
+                    page.set('total',res.pages.total);
+                    page.set('next_page',res.pages.next_page ? res.pages.next_page : '');
+                    userevent.set('userId',this.userId);
+                    userevent.set('pages',page);
+                    console.log('b len: ' + res.events.length);
+                    for (i=0; i < res.events.length; i++){
+                        //console.log('c i: ' + i);
+                        let evt = new cal_Event();
+                        let cronofy = res.events[i];
+                        let calId = cronofy.calendar_id ? cronofy.calendar_id : '';
+                        let cal = usercalendar.findCalendar(calId);
+                        evt.set('linkedCalendar',cal);
+
+                        evt.set('calendar_id',calId);
+                        evt.set('created',cronofy.created);
+                        evt.set('deleted',cronofy.deleted);
+                        evt.set('description',cronofy.description ? cronofy.description : '');
+                        evt.set('end',cronofy.end);
+                        evt.set('event_id',cronofy.event_id ? cronofy.event_id : '');
+                        evt.set('event_uid',cronofy.event_uid ? cronofy.event_uid : '');
+                        evt.set('event_status',cronofy.event_status ? cronofy.event_status : '');
+                        evt.set('participation_status',cronofy.participation_status ? cronofy.participation_status : '');
+                        evt.set('start',cronofy.start);
+                        evt.set('status',cronofy.status);
+                        evt.set('summary',cronofy.summary ? cronofy.summary : '');
+                        evt.set('transparency',cronofy.transparency ? cronofy.transparency : '');
+                        evt.set('updated',cronofy.updated);
+
+                        for (j=0; j < cronofy.attendees.length; j++){
+                            let attendee = new cal_Attendee;
+                            attendee.set('email',cronofy.attendees[j].email ? cronofy.attendees[j].email : '');
+                            attendee.set('email',cronofy.attendees[j].display_name ? cronofy.attendees[j].display_name : '');
+                            attendee.set('email',cronofy.attendees[j].status ? cronofy.attendees[j].status : '');
+                            evt.push('attendees',attendee);
+                        }
+                        let loc = new cal_Location;
+                        loc.set('description',cronofy.location ? cronofy.location : '');
+                        evt.set('location',loc);
+                        userevent.push('events',evt);
+                    }
+                    console.dir(userevent);
+                    console.log('d');
+                    userevent.save();
+
+                } else {
+                    callback(status, res);
+                }
+            });
+
+        },
         newLinkedCalendar: function (cal) {
             //Used to build a new linked calendar
             check(cal, {
@@ -300,6 +362,7 @@ const cronofyHelper = function(userId) {
             //Update the current user's calendars
             check(callback, Function);
             var that = this;
+            console.log('inside updateUserCalendar userId: ' + self.userId);
             this.calendarList((status, res) => {
                 console.log('back from call from calendarList');
                 var match = false, newLinkedCals = [];
@@ -321,6 +384,7 @@ const cronofyHelper = function(userId) {
                         console.log("after userCal.save");
                     } else {
                         userCal = new UserCalendar();
+                        userCal.set('userId',self.userId);
                         res.calendars.map(function (cal, i) {
                             userCal.push('availCalendars', that.newLinkedCalendar(cal));
                         });

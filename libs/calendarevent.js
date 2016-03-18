@@ -27,6 +27,13 @@ cal_Event = Astro.Class({
                 return [];
             }
         },
+        linkedCalendar:{
+            type: 'object',
+            nested: 'LinkedCalendar',
+            default: function(){
+                return {};
+            }
+        },
         calendar_id: 'string',
         created: 'date',
         deleted: 'boolean',
@@ -64,6 +71,7 @@ UserEvent = Astro.Class({
     name: 'UserEvents',
     collection: UserEvents,
     fields:{
+        userId: 'string',
         events:{
             type: 'array',
             nested: 'cal_Event',
@@ -80,4 +88,13 @@ UserEvent = Astro.Class({
         }
 
     }
+    //events: {
+    //    afterInit: function () {
+    //        //var self = this;
+    //        //if (this.isLinked()){
+    //            this.userId = Meteor.userId();
+    //        //}
+    //
+    //    }
+    //}
 });

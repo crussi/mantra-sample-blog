@@ -33,64 +33,13 @@ Meteor.publish('cal-event-list', function () {
 
 
 
-    cronofyHelper(this.userId).readEvents(options, function (status,res) {
-        console.log("back from readEvents");
-        //console.dir(UserEvents());
-        //console.dir(UserCalendars());
-        //var uc = new UserCalendars;
-        //console.log('a');
+    cronofyHelper(this.userId).loadEvents(options, (status,res) => {
+        console.log("back from loadEvents");
         if (status != 'error'){
-            var userevent = new UserEvent();
-            console.log('a.1');
-            let page = new cal_Page();
-            let i = 0, j = 0;
-            page.set('current',res.pages.current);
-            page.set('total',res.pages.total);
-            page.set('next_page',res.pages.next_page ? res.pages.next_page : '');
-            userevent.set('pages',page);
-            console.log('b len: ' + res.events.length);
-            for (i=0; i < res.events.length; i++){
-                console.log('c i: ' + i);
-                let evt = new cal_Event();
-                let cronofy = res.events[i];
-
-                evt.set('calendar_id',cronofy.calendar_id ? cronofy.calendar_id : '');
-                evt.set('created',cronofy.created);
-                evt.set('deleted',cronofy.deleted);
-                evt.set('description',cronofy.description ? cronofy.description : '');
-                evt.set('end',cronofy.end);
-                evt.set('event_id',cronofy.event_id ? cronofy.event_id : '');
-                evt.set('event_uid',cronofy.event_uid ? cronofy.event_uid : '');
-                evt.set('event_status',cronofy.event_status ? cronofy.event_status : '');
-                evt.set('participation_status',cronofy.participation_status ? cronofy.participation_status : '');
-                evt.set('start',cronofy.start);
-                evt.set('status',cronofy.status);
-                evt.set('summary',cronofy.summary ? cronofy.summary : '');
-                evt.set('transparency',cronofy.transparency ? cronofy.transparency : '');
-                evt.set('updated',cronofy.updated);
-
-                for (j=0; j < cronofy.attendees.length; j++){
-                    let attendee = new cal_Attendee;
-                    attendee.set('email',cronofy.attendees[j].email ? cronofy.attendees[j].email : '');
-                    attendee.set('email',cronofy.attendees[j].display_name ? cronofy.attendees[j].display_name : '');
-                    attendee.set('email',cronofy.attendees[j].status ? cronofy.attendees[j].status : '');
-                    evt.push('attendees',attendee);
-                }
-                let loc = new cal_Location;
-                loc.set('description',cronofy.location ? cronofy.location : '');
-                evt.set('location',loc);
-                userevent.push('events',evt);
-            }
-            //console.dir(userevent);
-            console.log('d');
-            userevent.save();
+            console.log('success');
         } else {
             console.log("an error occurred");
         }
-
-
-
-
         //console.log("before actual publish return");
         //return UserEvents.findOne({});
     });

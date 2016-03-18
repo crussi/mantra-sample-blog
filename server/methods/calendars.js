@@ -81,21 +81,21 @@ Meteor.methods({
         });
     },
 
+    //'calendars.readEvents': function(options){
+    //    console.log("meteor method readEvents");
+    //    check(options, {
+    //        from: String,
+    //        to: String,
+    //        tzid: String,
+    //        include_deleted: Boolean,
+    //        include_managed: Boolean
+    //    });
+    //    cronofyHelper(this.userId).readEvents(options, function(status,res){
+    //        console.log('status: ' + status);
+    //        console.dir(res);
+    //    });
+    //},
     'calendars.readEvents': function(options){
-        console.log("meteor method readEvents");
-        check(options, {
-            from: String,
-            to: String,
-            tzid: String,
-            include_deleted: Boolean,
-            include_managed: Boolean
-        });
-        cronofyHelper(this.userId).readEvents(options, function(status,res){
-            console.log('status: ' + status);
-            console.dir(res);
-        });
-    },
-    'calendars.readEventsNew': function(options){
         console.log("meteor method readEventsNew");
         check(options, {
             from: String,
@@ -107,14 +107,14 @@ Meteor.methods({
         this.unblock();
         var future = new Future();
         cronofyHelper(this.userId).readEvents(options, function(status,res){
-            let userevents = new UserEvents();
+            let userevent = new UserEvent();
             if (status != 'error'){
                 let page = new cal_Page();
                 let i = 0, j = 0;
                 page.set('current',res.pages.current);
                 page.set('total',res.pages.total);
                 page.set('next_page',res.pages.next_page ? res.pages.next_page : '');
-                userevents.set('pages',page);
+                userevent.set('pages',page);
                 for (i=0; i < res.events.length; i++){
                     let evt = new cal_Event();
                     let cronofy = res.events[i];
@@ -144,17 +144,17 @@ Meteor.methods({
                     let loc = new cal_Location;
                     loc.set('description',cronofy.location ? cronofy.location : '');
                     evt.set('location',loc);
-                    userevents.push('events',evt);
+                    userevent.push('events',evt);
                 }
             }
-            future.return({"status":status,"res":userevents});
+            future.return({"status":status,"res":userevent});
 
         });
         return future.wait();
     },
     'calendars.refresh': function(){
         //TODO: this should not be a method apart from the prototype
-        console.log("meteor method refresh");
+        console.log("meteor method refresh userId: " + this.userId);
         cronofyHelper(this.userId).updateUserCalendar(function(status,res){
            console.log('refresh status: ' + status);
         });

@@ -31,20 +31,29 @@ UserCalendar = Astro.Class({
         }
     },
     methods: {
-        isLinked: function(){
-            return (Meteor.user().services && Meteor.user().services.cronofy);
-        }
-
-    },
-    events: {
-        afterInit: function () {
-            var self = this;
-            if (this.isLinked()){
-                this.userId = Meteor.userId();
+        //isLinked(){
+        //    return (Meteor.user().services && Meteor.user().services.cronofy);
+        //},
+        findCalendar(calId){
+            //console.log("inside findCalendar calId: " + calId);
+            if (this.availCalendars.length > 0){
+                //console.log('before findWhere');
+                var result = _.findWhere(this.availCalendars,{calendar_id:calId});
+                //console.log("this cal was found");
+                //console.dir(result);
+                return result;
             }
-
         }
     }
+    //events: {
+    //    afterInit: function () {
+    //        var self = this;
+    //        if (this.isLinked()){
+    //            this.userId = Meteor.userId();
+    //        }
+    //
+    //    }
+    //}
 });
 
 
