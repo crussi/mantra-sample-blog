@@ -21,19 +21,26 @@ Meteor.publish('cal-event-list', function () {
     console.log("publish cal-event-list");
 
     var date = new Date();
-    var from = moment(date).add(-2,'d').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
-    var to = moment(date).add(2,'d').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+    //var from = moment(date).add(-2,'d').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+    //var to = moment(date).add(2,'d').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+    var from = moment().startOf('isoweek').format();
+    var to = moment().endOf('isoweek').format();
     var options = {
         from: from,
         to: to,
-        tzid:"America/Los_Angeles",
+        tzid:"Etc/UTC",
         include_deleted: false,
         include_managed: true
     };
 
+    //var d = moment(12-25-2015);
+    //var x = d.isoWeek();
+    //var y = d.week();
+    //console.log("weekno: " + x + ' y: ' + y);
 
 
-    cronofyHelper(this.userId).loadEvents(options, (status,res) => {
+
+    cronofyHelper(this.userId).loadWklyEvents(options, (status,res) => {
         console.log("back from loadEvents");
         if (status != 'error'){
             console.log('success');

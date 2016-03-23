@@ -258,62 +258,81 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        loadEvents: function(options, callback) {
+        loadWklyEvents: function(options, callback) {
+            //Load weekly events for the date range provided.  All events will be saved with ISO week start, end and number.
+            let that = this;
+            let weekstart = options.from;
+            let weekend = options.to;
+            let year = moment(weekstart).year();
+            let weekno = moment(weekstart).isoWeek();
+            console.log('weekstart: ' + weekstart);
+            //Check to see if a userevent doc exists for this week
+            let uevent = UserEvents.findOne({userId: self.userId, year: year, weekno: weekno});
+            if (uevent){
+                //doc exists, check expiration
+                if (uevent.expiration && moment().diff(uevent.expiration) <= 0) {
+                    callback("success", null);
+                }
+ 0           }
+            //Either the doc didn't exist or it's expired, so fetch events
             this.readEvents(options, (status, res) => {
                 if (status == 'success') {
-                    console.log('loadEvents readEvents success');
                     const usercalendar = UserCalendars.findOne({userId: self.userId});
-                    //console.dir(usercalendar);
-
-                    var userevent = new UserEvent();
-                    console.log('a.1');
+                    //Delete doc if it exists
+                    UserEvents.remove({userId: self.userId, year: year, weekno: weekno});
+                    userevent = new UserEvent();
                     let page = new cal_Page();
                     let i = 0, j = 0;
-                    page.set('current',res.pages.current);
-                    page.set('total',res.pages.total);
-                    page.set('next_page',res.pages.next_page ? res.pages.next_page : '');
-                    userevent.set('userId',this.userId);
-                    userevent.set('pages',page);
-                    console.log('b len: ' + res.events.length);
-                    for (i=0; i < res.events.length; i++){
-                        //console.log('c i: ' + i);
+                    //TODO: For now, not worrying about possibility of "paging"
+                    page.set('current', res.pages.current);
+                    page.set('total', res.pages.total);
+                    page.set('next_page', res.pages.next_page ? res.pages.next_page : '');
+                    userevent.set('year', year);
+                    userevent.set('weekno', weekno);
+                    console.log('inside weekstart:' + weekstart);
+                    userevent.set('weekstart',weekstart);
+                    userevent.set('weekend',weekend);
+                    //TODO: expiration offset needs to be put in config!!!
+                    userevent.set('expiration',moment().add(5,'minutes'));
+                    userevent.set('userId', self.userId);
+                    userevent.set('pages', page);
+                    for (i = 0; i < res.events.length; i++) {
+                        console.log('c i: ' + i);
                         let evt = new cal_Event();
                         let cronofy = res.events[i];
                         let calId = cronofy.calendar_id ? cronofy.calendar_id : '';
                         let cal = usercalendar.findCalendar(calId);
-                        evt.set('linkedCalendar',cal);
+                        evt.set('linkedCalendar', cal);
 
-                        evt.set('calendar_id',calId);
-                        evt.set('created',cronofy.created);
-                        evt.set('deleted',cronofy.deleted);
-                        evt.set('description',cronofy.description ? cronofy.description : '');
-                        evt.set('end',cronofy.end);
-                        evt.set('event_id',cronofy.event_id ? cronofy.event_id : '');
-                        evt.set('event_uid',cronofy.event_uid ? cronofy.event_uid : '');
-                        evt.set('event_status',cronofy.event_status ? cronofy.event_status : '');
-                        evt.set('participation_status',cronofy.participation_status ? cronofy.participation_status : '');
-                        evt.set('start',cronofy.start);
-                        evt.set('status',cronofy.status);
-                        evt.set('summary',cronofy.summary ? cronofy.summary : '');
-                        evt.set('transparency',cronofy.transparency ? cronofy.transparency : '');
-                        evt.set('updated',cronofy.updated);
+                        evt.set('calendar_id', calId);
+                        evt.set('created', cronofy.created);
+                        evt.set('deleted', cronofy.deleted);
+                        evt.set('description', cronofy.description ? cronofy.description : '');
+                        evt.set('end', cronofy.end);
+                        evt.set('event_id', cronofy.event_id ? cronofy.event_id : '');
+                        evt.set('event_uid', cronofy.event_uid ? cronofy.event_uid : '');
+                        evt.set('event_status', cronofy.event_status ? cronofy.event_status : '');
+                        evt.set('participation_status', cronofy.participation_status ? cronofy.participation_status : '');
+                        evt.set('start', cronofy.start);
+                        evt.set('status', cronofy.status);
+                        evt.set('summary', cronofy.summary ? cronofy.summary : '');
+                        evt.set('transparency', cronofy.transparency ? cronofy.transparency : '');
+                        evt.set('updated', cronofy.updated);
 
-                        for (j=0; j < cronofy.attendees.length; j++){
+                        for (j = 0; j < cronofy.attendees.length; j++) {
                             let attendee = new cal_Attendee;
-                            attendee.set('email',cronofy.attendees[j].email ? cronofy.attendees[j].email : '');
-                            attendee.set('email',cronofy.attendees[j].display_name ? cronofy.attendees[j].display_name : '');
-                            attendee.set('email',cronofy.attendees[j].status ? cronofy.attendees[j].status : '');
-                            evt.push('attendees',attendee);
+                            attendee.set('email', cronofy.attendees[j].email ? cronofy.attendees[j].email : '');
+                            attendee.set('email', cronofy.attendees[j].display_name ? cronofy.attendees[j].display_name : '');
+                            attendee.set('email', cronofy.attendees[j].status ? cronofy.attendees[j].status : '');
+                            evt.push('attendees', attendee);
                         }
                         let loc = new cal_Location;
-                        loc.set('description',cronofy.location ? cronofy.location : '');
-                        evt.set('location',loc);
-                        userevent.push('events',evt);
+                        loc.set('description', cronofy.location ? cronofy.location : '');
+                        evt.set('location', loc);
+                        userevent.push('events', evt);
+                        //Now save newly created doc
+                        userevent.save();
                     }
-                    console.dir(userevent);
-                    console.log('d');
-                    userevent.save();
-
                 } else {
                     callback(status, res);
                 }

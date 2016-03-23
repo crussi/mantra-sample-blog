@@ -299,6 +299,8 @@
         <item url="file://$USER_HOME$/.meteor/packages/ddp-rate-limiter/1.0.1-modules.4/web.browser/ddp-rate-limiter-test-service.js" />
         <item url="file://$USER_HOME$/.meteor/packages/ddp-rate-limiter/1.0.1-modules.4/web.browser/ddp-rate-limiter-tests-common.js" />
         <item url="file://$USER_HOME$/.meteor/packages/underscore/1.0.5-modules.4/web.browser/underscore.js" />
+        <item url="file://$USER_HOME$/.meteor/packages/risul_moment-timezone/0.5.0_4/web.browser/post.js" />
+        <item url="file://$USER_HOME$/.meteor/packages/risul_moment-timezone/0.5.0_4/web.browser/lib/moment-timezone-with-data.js" />
         <item url="file://$USER_HOME$/.meteor/packages/webapp/1.2.4-modules.4/web.browser/webapp_client_tests.js" />
         <item url="file://$USER_HOME$/.meteor/packages/service-configuration/1.0.6-modules.4/web.browser/service_configuration_server.js" />
         <item url="file://$USER_HOME$/.meteor/packages/webapp/1.2.4-modules.4/web.browser/webapp_tests.js" />
@@ -314,6 +316,7 @@
         <item url="file://$USER_HOME$/.meteor/packages/url/1.0.6-modules.4/web.browser/url_client.js" />
         <item url="file://$USER_HOME$/.meteor/packages/kadira_flow-router/2.10.0/web.browser/client/group.js" />
         <item url="file://$USER_HOME$/.meteor/packages/rate-limit/1.0.1-modules.4/web.browser/rate-limit-tests.js" />
+        <item url="file://$USER_HOME$/.meteor/packages/risul_moment-timezone/0.5.0_4/web.browser/pre.js" />
         <item url="file://$USER_HOME$/.meteor/packages/kadira_flow-router/2.10.0/web.browser/client/router.js" />
         <item url="file://$USER_HOME$/.meteor/packages/oauth/1.1.7-modules.4/web.browser/pending_credentials.js" />
         <item url="file://$USER_HOME$/.meteor/packages/kadira_flow-router/2.10.0/web.browser/lib/router.js" />
@@ -662,6 +665,8 @@
       <root url="file://$USER_HOME$/.meteor/packages/ddp-rate-limiter/1.0.1-modules.4/web.browser/ddp-rate-limiter-test-service.js" />
       <root url="file://$USER_HOME$/.meteor/packages/ddp-rate-limiter/1.0.1-modules.4/web.browser/ddp-rate-limiter-tests-common.js" />
       <root url="file://$USER_HOME$/.meteor/packages/underscore/1.0.5-modules.4/web.browser/underscore.js" />
+      <root url="file://$USER_HOME$/.meteor/packages/risul_moment-timezone/0.5.0_4/web.browser/post.js" />
+      <root url="file://$USER_HOME$/.meteor/packages/risul_moment-timezone/0.5.0_4/web.browser/lib/moment-timezone-with-data.js" />
       <root url="file://$USER_HOME$/.meteor/packages/webapp/1.2.4-modules.4/web.browser/webapp_client_tests.js" />
       <root url="file://$USER_HOME$/.meteor/packages/service-configuration/1.0.6-modules.4/web.browser/service_configuration_server.js" />
       <root url="file://$USER_HOME$/.meteor/packages/webapp/1.2.4-modules.4/web.browser/webapp_tests.js" />
@@ -677,6 +682,7 @@
       <root url="file://$USER_HOME$/.meteor/packages/url/1.0.6-modules.4/web.browser/url_client.js" />
       <root url="file://$USER_HOME$/.meteor/packages/kadira_flow-router/2.10.0/web.browser/client/group.js" />
       <root url="file://$USER_HOME$/.meteor/packages/rate-limit/1.0.1-modules.4/web.browser/rate-limit-tests.js" />
+      <root url="file://$USER_HOME$/.meteor/packages/risul_moment-timezone/0.5.0_4/web.browser/pre.js" />
       <root url="file://$USER_HOME$/.meteor/packages/kadira_flow-router/2.10.0/web.browser/client/router.js" />
       <root url="file://$USER_HOME$/.meteor/packages/oauth/1.1.7-modules.4/web.browser/pending_credentials.js" />
       <root url="file://$USER_HOME$/.meteor/packages/kadira_flow-router/2.10.0/web.browser/lib/router.js" />

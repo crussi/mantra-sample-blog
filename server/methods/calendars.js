@@ -106,49 +106,15 @@ Meteor.methods({
         });
         this.unblock();
         var future = new Future();
-        cronofyHelper(this.userId).readEvents(options, function(status,res){
-            let userevent = new UserEvent();
+        cronofyHelper(this.userId).loadWklyEvents(options, (status,res) => {
+            console.log("back from loadEvents");
             if (status != 'error'){
-                let page = new cal_Page();
-                let i = 0, j = 0;
-                page.set('current',res.pages.current);
-                page.set('total',res.pages.total);
-                page.set('next_page',res.pages.next_page ? res.pages.next_page : '');
-                userevent.set('pages',page);
-                for (i=0; i < res.events.length; i++){
-                    let evt = new cal_Event();
-                    let cronofy = res.events[i];
-
-                    evt.set('calendar_id',cronofy.calendar_id ? cronofy.calendar_id : '');
-                    evt.set('created',cronofy.created);
-                    evt.set('deleted',cronofy.deleted);
-                    evt.set('description',cronofy.description ? cronofy.description : '');
-                    evt.set('end',cronofy.end);
-                    evt.set('event_id',cronofy.event_id ? cronofy.event_id : '');
-                    evt.set('event_uid',cronofy.event_uid ? cronofy.event_uid : '');
-                    evt.set('event_status',cronofy.event_status ? cronofy.event_status : '');
-                    evt.set('participation_status',cronofy.participation_status ? cronofy.participation_status : '');
-                    evt.set('start',cronofy.start);
-                    evt.set('status',cronofy.status);
-                    evt.set('summary',cronofy.summary ? cronofy.summary : '');
-                    evt.set('transparency',cronofy.transparency ? cronofy.transparency : '');
-                    evt.set('updated',cronofy.updated);
-
-                    for (j=0; j < cronofy.attendees.length; j++){
-                        let attendee = new cal_Attendee;
-                        attendee.set('email',cronofy.attendees[j].email ? cronofy.attendees[j].email : '');
-                        attendee.set('email',cronofy.attendees[j].display_name ? cronofy.attendees[j].display_name : '');
-                        attendee.set('email',cronofy.attendees[j].status ? cronofy.attendees[j].status : '');
-                        evt.push('attendees',attendee);
-                    }
-                    let loc = new cal_Location;
-                    loc.set('description',cronofy.location ? cronofy.location : '');
-                    evt.set('location',loc);
-                    userevent.push('events',evt);
-                }
+                console.log('success');
+            } else {
+                console.log("an error occurred");
             }
-            future.return({"status":status,"res":userevent});
-
+            //console.log("before actual publish return");
+            //return UserEvents.findOne({});
         });
         return future.wait();
     },

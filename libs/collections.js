@@ -3,5 +3,6 @@ import {Mongo} from 'meteor/mongo';
 export default {
   Posts: new Mongo.Collection('posts'),
   UserCalendars: new Mongo.Collection('usercalendars'),
-  UserEvents: new Mongo.Collection('userevents')
+  //UserEvents: new Mongo.Collection("userevents", {connection: null})
+  UserEvents: new Mongo.Collection("userevents")
 };

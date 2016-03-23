@@ -72,6 +72,11 @@ UserEvent = Astro.Class({
     collection: UserEvents,
     fields:{
         userId: 'string',
+        year: 'number',
+        weekno: 'number',
+        weekstart: 'date',
+        weekend: 'date',
+        expiration: 'date',
         events:{
             type: 'array',
             nested: 'cal_Event',
