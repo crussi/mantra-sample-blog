@@ -76,7 +76,8 @@ class LinkCalendar extends React.Component {
 
     revokeAuthorization() {
         console.log("revoke authorization clicked");
-        Meteor.call('calendars.revokeAuthorization', (err) => {
+        Meteor.call('calendars.revokeAuthorization', (err,status) => {
+            console.log('status: ' + status);
             if (err) {
                 console.log("error occurred calling calendars.revokeAuthorization");
                 console.dir(err);
@@ -87,7 +88,8 @@ class LinkCalendar extends React.Component {
 
     listCalendars() {
         //console.log("link calendar clicked");
-        Meteor.call('calendars.list', (err) => {
+        Meteor.call('calendars.list', (err,status) => {
+            console.log('status: ' + status);
             if (err) {
                 console.log("error occurred calling calendars.list");
                 console.dir(err);
@@ -98,7 +100,8 @@ class LinkCalendar extends React.Component {
 
     calendarProfile() {
         console.log("calendar profile clicked");
-        Meteor.call('calendars.profile', (err) => {
+        Meteor.call('calendars.profile', (err,status) => {
+            console.log('status: ' + status);
             if (err) {
                 console.log("error occurred calling calendars.profile");
                 console.dir(err);
@@ -108,7 +111,8 @@ class LinkCalendar extends React.Component {
 
     calendarFreeBusy() {
         console.log("calendar freeBusy clicked");
-        Meteor.call('calendars.freeBusy', (err) => {
+        Meteor.call('calendars.freeBusy', (err,status) => {
+            console.log('status: ' + status);
             if (err) {
                 console.log("error occurred calling calendars.freeBusy");
                 console.dir(err);
@@ -146,7 +150,8 @@ class LinkCalendar extends React.Component {
         var options = {
             event_id: event_id
         }
-        Meteor.call('calendars.deleteEvent', options, (err) => {
+        Meteor.call('calendars.deleteEvent', options, (err,status) => {
+            console.log('status: ' + status);
             if (err) {
                 console.log("error occurred calling calendars.deleteEvent");
                 console.dir(err);
@@ -167,7 +172,8 @@ class LinkCalendar extends React.Component {
             include_managed: true
         };
         console.dir(options);
-        Meteor.call('calendars.readEvents', options, (err) => {
+        Meteor.call('calendars.readEvents', options, (err,status) => {
+            console.log('status: ' + status);
             if (err) {
                 console.log("error occurred calling calendars.readEvents");
                 console.dir(err);
@@ -177,7 +183,8 @@ class LinkCalendar extends React.Component {
 
     calendarRefresh() {
         console.log('calendar refresh');
-        Meteor.call('calendars.refresh', (err) => {
+        Meteor.call('calendars.refresh', (err,status) => {
+            console.log('status: ' + status);
             if (err) {
                 console.log("error occurred calling calendars.refresh");
                 console.dir(err);

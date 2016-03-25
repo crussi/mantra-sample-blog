@@ -9,13 +9,14 @@ export default {
         const id = Meteor.uuid();
         // There is a method stub for this in the config/method_stubs
         // That's how we are doing latency compensation
-        Meteor.call('userevent.create', id, criteria, (err) => {
-            if (err) {
-                return LocalState.set('SAVING_ERROR', err.message);
-            }
-        });
+        console.log('caleventcreate action');
+        //console.dir(options);
         Meteor.call('calendars.createEvent', options, (err) => {
+            //console.log("createEvent err follows:");
+            //console.dir(err);
             if (err) {
+                console.log("action: error creating an event");
+                console.dir(err);
                 return LocalState.set('SAVING_ERROR', err.message);
             }
         });

@@ -273,7 +273,7 @@ const cronofyHelper = function(userId) {
                 if (uevent.expiration && moment().diff(uevent.expiration) <= 0) {
                     callback("success", null);
                 }
- 0           }
+            }
             //Either the doc didn't exist or it's expired, so fetch events
             this.readEvents(options, (status, res) => {
                 if (status == 'success') {
@@ -410,9 +410,9 @@ const cronofyHelper = function(userId) {
                         userCal.save();
                         console.log("after new userCal.save");
                     }
-
+                    callback(status);
                 } else {
-                    callback(status)
+                    callback(status);
                 }
             })
         }
