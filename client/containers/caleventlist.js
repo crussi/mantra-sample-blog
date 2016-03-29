@@ -16,7 +16,7 @@ export const composer = ({context}, onData) => {
 };
 
 export const depsMapper = (context, actions) => ({
-
+    deleteEvent: actions.caleventlist.deleteEvent,
     context: () => context
 });
 

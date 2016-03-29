@@ -14,7 +14,7 @@ var currUserId = this.userId;
 
 Meteor.publish('cal-event-list', function () {
     var self = this;
-    console.log("in publish userId: " + this.userId + " currUserId: " + currUserId);
+    console.log("in publish userId: " + this.userId);
     //const selector = {userId: this.userId};
     //const options = {};
     //return UserCalendars.find(selector, options);

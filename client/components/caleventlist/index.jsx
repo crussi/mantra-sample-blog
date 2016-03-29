@@ -11,8 +11,8 @@ class CalEventList extends React.Component {
         let comp = <span>No events found</span>;
         if (userevent && userevent.events) {
             comp = userevent.events.map(uevent => {
-                //console.log(uevent.created);
-
+                //console.log('looping thru userevent.events ...');
+                //console.dir(uevent);
                 let start = new moment(uevent.start).format("MM/DD/YY hh:mm a");
                 let end = new moment(uevent.end).format("MM/DD/YY hh:mm a");
 
@@ -24,9 +24,11 @@ class CalEventList extends React.Component {
                             <span style={spanStyle}>{start}</span>
                             <span style={spanStyle}>{end}</span>
                             <span style={spanStyle}>{calname}</span>
+                            <span style={spanStyle}>{uevent.summary}</span>
                             <span style={spanStyle}>{uevent.description}</span>
                         </a>
-
+                        <button onClick={this.deleteEvent.bind(this,uevent)}>Edit</button>
+                        <button onClick={this.deleteEvent.bind(this,uevent)}>Delete</button>
                     </li>]
                 }
 
@@ -41,7 +43,28 @@ class CalEventList extends React.Component {
             </div>
         );
     }
-
+    deleteEvent(uevent){
+        console.log('about to delete event:');
+        //console.dir(uevent);
+        //var event_id = Session.get('event_id');
+        //var options = {
+        //    calendar_id: uevent.linkedCalendar.calendar_id,
+        //    event_id: uevent.event_id
+        //}
+        let options = {
+            from: moment(uevent.start).startOf('isoweek').format(),
+            to: moment(uevent.start).endOf('isoweek').format(),
+            tzid:"America/Los_Angeles",
+            include_deleted: false,
+            include_managed: true,
+            calendar_id: uevent.linkedCalendar.calendar_id,
+            event_id: uevent.event_id
+        };
+        //console.log("deleteEvent(event_id): " + uevent.event_id);
+        console.dir(options);
+        const {deleteEvent} = this.props;
+        deleteEvent(options);
+    }
 
 }
 

@@ -3,23 +3,23 @@ import {UserCalendars} from '/libs/collections';
 import {UserEvents} from '/libs/collections';
 
 const cronofyHelper = function(userId) {
-    //store userId for use throughout functions
+    //store userId in closure for use throughout functions
     var self = this;
     this.userId = userId;
     this.user = Meteor.users.findOne({_id: this.userId});
     return {
-        hasLinkedCalendar: function () {
+        hasLinkedCalendar() {
             //Did the user authenticate with Cronofy?
             return self.user && self.user.services.cronofy ? true : false;
         },
-        attachUserId: function (errMsg) {
+        attachUserId(errMsg) {
             check(errMsg, String);
             //Attach userId to any logged errors
             let currentUserId = self.userId || "no user id";
             let e = errMsg + " for userId: " + currentUserId;
             return e;
         },
-        isExpired: function () {
+        isExpired() {
             //Has the Cronofy authentication token expired?
             if (this.hasLinkedCalendar()) {
                 return moment().toDate() > self.user.services.cronofy.expiresAt;
@@ -27,7 +27,7 @@ const cronofyHelper = function(userId) {
                 return true;
             }
         },
-        config: function () {
+        config() {
             //Retrieve service configuration info
             var config = ServiceConfiguration.configurations.findOne({service: 'cronofy'});
             if (!config) {
@@ -36,7 +36,7 @@ const cronofyHelper = function(userId) {
             }
             return config;
         },
-        checkLinkedCalendar: function (callback) {
+        checkLinkedCalendar(callback) {
             //Validate existence of linked calendar, refresh access token if necessary
             check(callback, Function);
             if (!this.hasLinkedCalendar()) {
@@ -52,7 +52,7 @@ const cronofyHelper = function(userId) {
             }
 
         },
-        refreshAccessToken: function (callback) {
+        refreshAccessToken(callback) {
             //Don't call checkLinkedCalendar here!  Infinite loop.
             //Refresh access token and update Meteor user account information
             check(callback, Function);
@@ -81,7 +81,7 @@ const cronofyHelper = function(userId) {
                 }));
             }
         },
-        revokeAuthorization: function (callback) {
+        revokeAuthorization(callback) {
             //Revoke this user's access token, user must reauthenticate with Cronofy to continue
             check(callback, Function);
             this.checkLinkedCalendar( (status, res) => {
@@ -105,7 +105,7 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        calendarList: function (callback) {
+        calendarList(callback) {
             //Produce a list of available calendars
             check(callback, Function);
             that = this;
@@ -129,7 +129,7 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        userProfile: function (callback) {
+        userProfile(callback) {
             //Output the user's Cronofy profile
             check(callback, Function);
             this.checkLinkedCalendar((status, res) => {
@@ -150,7 +150,7 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        freeBusy: function (options, callback) {
+        freeBusy(options, callback) {
             //Output "free | busy" status for calenar options provided
             check(options, {from: String, to: String, tzid: String});
             check(callback, Function);
@@ -172,7 +172,7 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        createEvent: function (options, callback) {
+        createEvent(options, callback) {
             //Create a calendar event for the options specified
             check(options, {
                 calendar_id: String,
@@ -202,16 +202,16 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        deleteEvent: function (options, callback) {
+        deleteEvent(options, callback) {
             //Delete specified calendar event
             check(options, {
+                calendar_id: String,
                 event_id: String
             });
             check(callback, Function);
             this.checkLinkedCalendar((status, res) => {
                 if (status == 'success') {
                     options = _.extend({
-                        calendar_id: 'cal_Vpg1U7TM0HgKADQw_pjFndgu883IoFKuKDX0Lyw',
                         access_token: self.user.services.cronofy.accessToken
                     }, options);
 
@@ -228,7 +228,7 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        readEvents: function (options, callback) {
+        readEvents(options, callback) {
             //Read all events for the options specified
             check(options, {
                 from: String,
@@ -258,7 +258,7 @@ const cronofyHelper = function(userId) {
                 }
             });
         },
-        loadWklyEvents: function(options, callback) {
+        loadWklyEvents(options, callback) {
             //Load weekly events for the date range provided.  All events will be saved with ISO week start, end and number.
             let that = this;
             let weekstart = options.from;
@@ -339,7 +339,7 @@ const cronofyHelper = function(userId) {
             });
 
         },
-        newLinkedCalendar: function (cal) {
+        newLinkedCalendar(cal) {
             //Used to build a new linked calendar
             check(cal, {
                     provider_name: String, profile_id: String, profile_name: String, calendar_id: String,
@@ -358,7 +358,7 @@ const cronofyHelper = function(userId) {
             linkedCalendar.set('selected', false);
             return linkedCalendar;
         },
-        updateLinkedCalendar: function (userCal, cal) {
+        updateLinkedCalendar(userCal, cal) {
             check(cal, {
                     provider_name: String, profile_id: String, profile_name: String, calendar_id: String,
                     calendar_name: String, calendar_readonly: Boolean, calendar_deleted: Boolean, calendar_primary: Boolean
@@ -377,7 +377,7 @@ const cronofyHelper = function(userId) {
             }
             return match;
         },
-        updateUserCalendar: function (callback) {
+        updateUserCalendar(callback) {
             //Update the current user's calendars
             check(callback, Function);
             var that = this;

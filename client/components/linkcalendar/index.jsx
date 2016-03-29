@@ -11,9 +11,10 @@ class LinkCalendar extends React.Component {
                 <button onClick={this.refreshAccessToken.bind(this)}>Refresh Access Token</button>
                 <button onClick={this.revokeAuthorization.bind(this)}>Revoke authorization</button>
                 <button onClick={this.listCalendars.bind(this)}>list calendars</button>
+                <button onClick={this.calendarRefresh.bind(this)}>Refresh Calendars</button>
+                <button onClick={this.loadWklyEvents.bind(this)}>Load Wkly Events</button>
                 <button onClick={this.calendarProfile.bind(this)}>Calendar Profile</button>
                 <button onClick={this.calendarFreeBusy.bind(this)}>Calendar Free Busy</button>
-                <button onClick={this.calendarRefresh.bind(this)}>Refresh</button>
 
             </div>
         );
@@ -159,11 +160,13 @@ class LinkCalendar extends React.Component {
         });
     }
 
-    calendarReadEvents() {
-        console.log("calendar readEvents clicked");
+    loadWklyEvents() {
+        console.log("calendar loadWklyEvents clicked");
         var date = new Date();
-        var from = moment(date).add(-2,'d').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
-        var to = moment(date).add(2,'d').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+        var from = moment().startOf('isoweek').format();
+        //moment(date).add(2,'d').utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+        console.log(moment().endOf('isoweek').format());
+        var to = moment().endOf('isoweek').format();
         var options = {
             from: from,
             to: to,
@@ -171,11 +174,11 @@ class LinkCalendar extends React.Component {
             include_deleted: false,
             include_managed: true
         };
-        console.dir(options);
-        Meteor.call('calendars.readEvents', options, (err,status) => {
+        //console.dir(options);
+        Meteor.call('calendars.loadWklyEvents', options, (err,status) => {
             console.log('status: ' + status);
             if (err) {
-                console.log("error occurred calling calendars.readEvents");
+                console.log("error occurred calling calendars.loadWklyEvents");
                 console.dir(err);
             }
         });

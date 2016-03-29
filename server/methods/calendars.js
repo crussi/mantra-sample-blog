@@ -116,9 +116,12 @@ Meteor.methods({
     },
     'calendars.deleteEvent': function(options){
         console.log("meteor method create event");
+        console.dir(options);
         check(options, {
+            calendar_id: String,
             event_id: String
         });
+
         this.unblock();
         var future = new Future();
         cronofyHelper(this.userId).deleteEvent(options, function(status,res){
@@ -133,8 +136,30 @@ Meteor.methods({
         return future.wait();
     },
 
-    'calendars.readEvents': function(options){
-        console.log("meteor method readEventsNew");
+    //'calendars.readEvents': function(options){
+    //    console.log("meteor method readEvents");
+    //    check(options, {
+    //        from: String,
+    //        to: String,
+    //        tzid: String,
+    //        include_deleted: Boolean,
+    //        include_managed: Boolean
+    //    });
+    //    this.unblock();
+    //    var future = new Future();
+    //    cronofyHelper(this.userId).readEvents(options, (status,res) => {
+    //        console.log("back from readEvents");
+    //        if (status != 'error') {
+    //            console.dir(res);
+    //            future.return(status);
+    //        } else {
+    //            future.throw(new Meteor.Error("calendar error","Unable to read events from linked calendar."));
+    //        }
+    //    });
+    //    return future.wait();
+    //},
+    'calendars.loadWklyEvents': function(options){
+        console.log("meteor method loadWklyEvents");
         check(options, {
             from: String,
             to: String,
@@ -145,12 +170,12 @@ Meteor.methods({
         this.unblock();
         var future = new Future();
         cronofyHelper(this.userId).loadWklyEvents(options, (status,res) => {
-            console.log("back from loadEvents");
+            console.log("back from loadWklyEvents");
             if (status != 'error') {
                 console.dir(res);
                 future.return(status);
             } else {
-                future.throw(new Meteor.Error("calendar error","Unable to read events from linked calendar."));
+                future.throw(new Meteor.Error("calendar error","Unable to load weekly events from linked calendar."));
             }
         });
         return future.wait();
