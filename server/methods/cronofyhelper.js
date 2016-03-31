@@ -236,6 +236,7 @@ const cronofyHelper = function(userId) {
                 tzid: String,
                 include_deleted: Boolean,
                 include_managed: Boolean
+
             });
             check(callback, Function);
             this.checkLinkedCalendar((status, res) => {

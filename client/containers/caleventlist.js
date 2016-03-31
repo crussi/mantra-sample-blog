@@ -7,8 +7,8 @@ export const composer = ({context}, onData) => {
     if (Meteor.subscribe('cal-event-list').ready()) {
         console.log("inside cal-event-list subscription");
         const userevent = Collections.UserEvents.findOne({});
-        console.log("inside cal-event-list after findOne");
-        console.dir(userevent);
+        //console.log("inside cal-event-list after findOne");
+        //console.dir(userevent);
         onData(null, {userevent});
     } else {
         console.log("subscribe cal-event-list not ready");

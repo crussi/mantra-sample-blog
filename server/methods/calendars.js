@@ -1,5 +1,6 @@
 //import {Posts} from '/libs/collections';
 import {Meteor} from 'meteor/meteor';
+import {UserEvents} from '/libs/collections';
 import {check} from 'meteor/check';
 import cronofyHelper from './cronofyhelper';
 import Future from 'fibers/future';
@@ -115,16 +116,24 @@ Meteor.methods({
         return future.wait();
     },
     'calendars.deleteEvent': function(options){
-        console.log("meteor method create event");
+        console.log("meteor method delete event");
         console.dir(options);
         check(options, {
+            //_id: String,
             calendar_id: String,
             event_id: String
         });
-
+        //let deleteOptions = {
+        //    calendar_id: options.calendar_id,
+        //    event_id: options.event_id
+        //};
+        //let _id = options._id;
+        //let event_id = options.event_id;
+        //let userevent = UserEvents.findOne({_id:options._id});
+        //delete options._id;
         this.unblock();
         var future = new Future();
-        cronofyHelper(this.userId).deleteEvent(options, function(status,res){
+        cronofyHelper(this.userId).deleteEvent(options, (status,res)=>{
             if (status != 'error') {
                 console.dir(res);
                 future.return(status);
@@ -134,6 +143,34 @@ Meteor.methods({
 
         });
         return future.wait();
+    },
+    'calendars.db.deleteEvent': function(options){
+        console.log("meteor method delete event");
+        //console.dir(options);
+        check(options, {
+            _id: String,
+            event_id: String
+        });
+
+        console.log("delete event method success");
+        userevent = UserEvents.findOne({_id:options._id});
+        let clone = userevent.events.slice();
+        for (var i = 0; i < clone.length; i++){
+            //console.log("uevent.event_id: " + clone[i].event_id);
+            //console.log("options.event_id: " + options.event_id);
+
+            if (clone[i].event_id == options.event_id){
+                console.log("found match will delete ...");
+                //console.dir(clone);
+                clone.splice(i,1);
+                //console.dir(clone);
+                //console.dir(userevent);
+                userevent.set('events',clone);
+                //console.dir(userevent);
+                userevent.save();
+                break;
+            }
+        }
     },
 
     //'calendars.readEvents': function(options){

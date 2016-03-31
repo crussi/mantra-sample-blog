@@ -27,8 +27,8 @@ class CalEventList extends React.Component {
                             <span style={spanStyle}>{uevent.summary}</span>
                             <span style={spanStyle}>{uevent.description}</span>
                         </a>
-                        <button onClick={this.deleteEvent.bind(this,uevent)}>Edit</button>
-                        <button onClick={this.deleteEvent.bind(this,uevent)}>Delete</button>
+                        <button onClick={this.deleteEvent.bind(this,userevent,uevent)}>Edit</button>
+                        <button onClick={this.deleteEvent.bind(this,userevent,uevent)}>Delete</button>
                     </li>]
                 }
 
@@ -43,7 +43,7 @@ class CalEventList extends React.Component {
             </div>
         );
     }
-    deleteEvent(uevent){
+    deleteEvent(userevent,uevent){
         console.log('about to delete event:');
         //console.dir(uevent);
         //var event_id = Session.get('event_id');
@@ -52,16 +52,17 @@ class CalEventList extends React.Component {
         //    event_id: uevent.event_id
         //}
         let options = {
-            from: moment(uevent.start).startOf('isoweek').format(),
-            to: moment(uevent.start).endOf('isoweek').format(),
-            tzid:"America/Los_Angeles",
-            include_deleted: false,
-            include_managed: true,
+            //from: moment(uevent.start).startOf('isoweek').format(),
+            //to: moment(uevent.start).endOf('isoweek').format(),
+            //tzid:"America/Los_Angeles",
+            //include_deleted: false,
+            //include_managed: true,
+            _id: userevent._id,
             calendar_id: uevent.linkedCalendar.calendar_id,
             event_id: uevent.event_id
         };
         //console.log("deleteEvent(event_id): " + uevent.event_id);
-        console.dir(options);
+        //console.dir(options);
         const {deleteEvent} = this.props;
         deleteEvent(options);
     }
